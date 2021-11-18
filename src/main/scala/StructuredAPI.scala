@@ -27,25 +27,3 @@ object StructuredAPI {
     df.select("*").where("largeThan1(count)").orderBy("count").show(3)
   }
 }
-
-object DistributedSharedVariables {
-  def main(args: Array[String]): Unit = {
-    val spark = SparkSession
-      .builder()
-      .appName("StructuredAPI")
-      .master("local[*]")
-      .getOrCreate()
-
-    val myCollection = "Spark The Definitive Guide : Big Data Processing Made Simple".split(" ")
-    val words = spark.sparkContext.parallelize(myCollection, 2)
-    val supplementalData = Map("Spark" -> 1000, "Definitive" -> 200, "Big" -> -300, "Simple" -> 100)
-
-    val broadCastValue = spark.sparkContext.broadcast(supplementalData)
-
-    val res = words.map(word => (word, broadCastValue.value.getOrElse(word, 0)))
-      .sortBy(wordPair => wordPair._2)
-      .collect()
-
-    println(res.mkString("Array(", ", ", ")"))
-  }
-}
