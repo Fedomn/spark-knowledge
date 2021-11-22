@@ -6,6 +6,7 @@ scala-doc:
 spark-doc:
 	open https://spark.apache.org/docs/latest/sql-programming-guide.html
 	open https://spark.apache.org/docs/latest/submitting-applications.html#master-urls
+	open https://spark.apache.org/docs/latest/configuration.html
 
 link-data:
 	git clone https://github.com/databricks/Spark-The-Definitive-Guide.git
