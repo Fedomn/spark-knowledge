@@ -11,6 +11,7 @@ spark-doc:
 link-data:
 	git clone https://github.com/databricks/Spark-The-Definitive-Guide.git
 	ln -s "$(PWD)/Spark-The-Definitive-Guide/data" "$(PWD)/src/main/resources/data"
+	ln -s "$(PWD)/Spark-The-Definitive-Guide/data" "$(PWD)/pyspark/data"
 
 spark-bin:
 	wget https://dlcdn.apache.org/spark/spark-3.2.0/spark-3.2.0-bin-hadoop3.2.tgz
