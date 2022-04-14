@@ -8,3 +8,9 @@
 ### playground
 
 use [Spark-The-Definitive-Guide's data](https://github.com/databricks/Spark-The-Definitive-Guide) as Datasets on this playground.
+
+
+### sdk requirements (global)
+
+- java: 11.0.11.hs-adpt
+- Python 3.8.10
