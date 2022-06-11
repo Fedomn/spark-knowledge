@@ -14,8 +14,12 @@ def query_result(input_table: str):
 
 def activity_counts(input_streaming: DataFrame) -> StreamingQuery:
     count = input_streaming.groupBy("gt").count()
-    query = count.writeStream.trigger(processingTime='3 seconds') \
-        .format("console").outputMode("complete").start()
+    query = count \
+        .writeStream \
+        .trigger(processingTime='3 seconds') \
+        .format("console") \
+        .outputMode("complete") \
+        .start()
     return query
 
 
@@ -25,6 +29,7 @@ def trans_example(input_streaming: DataFrame) -> StreamingQuery:
         .where("gt is not null") \
         .select("gt", "model", "arrival_time", "creation_time") \
         .writeStream \
+        .trigger(once=True) \
         .queryName("simple_transform") \
         .format("memory") \
         .outputMode("append") \
@@ -35,10 +40,13 @@ def trans_example(input_streaming: DataFrame) -> StreamingQuery:
 
 def join_example(input_streaming: DataFrame) -> StreamingQuery:
     historical_agg = static.groupBy("gt", "model").avg()
-    device_model_stats = input_streaming.drop("Arrival_Time", "Creation_Time") \
+    device_model_stats = input_streaming \
+        .drop("Arrival_Time", "Creation_Time") \
         .cube("gt", "model").avg() \
         .join(historical_agg, ["gt", "model"]) \
-        .writeStream.queryName("device_counts").format("memory") \
+        .writeStream \
+        .queryName("device_counts") \
+        .format("memory") \
         .outputMode("complete") \
         .start()
     Thread(target=query_result, args=['device_counts']).start()
@@ -60,7 +68,7 @@ if __name__ == '__main__':
     print(dataSchema)
     streaming = spark.readStream.schema(dataSchema).option("maxFilesPerTrigger", 1).json("./data/activity-data")
 
-    activity_query = activity_counts(streaming)
-    # trans_example(streaming)
+    # query = activity_counts(streaming)
+    query = trans_example(streaming)
     # join_example(streaming)
-    activity_query.awaitTermination()
+    query.awaitTermination()
