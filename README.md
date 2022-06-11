@@ -1,5 +1,9 @@
 ## spark-knowledge
 
+### Notes
+
+- [Spark:The Definitive Guide & Learning Spark 2.md](./doc/Spark:The%20Definitive%20Guide%20&%20Learning%20Spark%202.md)
+
 ### documentation
 
 - [The Internals of Spark SQL](https://github.com/japila-books/spark-sql-internals)
