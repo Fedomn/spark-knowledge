@@ -57,18 +57,22 @@ if __name__ == '__main__':
     spark = SparkSession.builder \
         .master("local[*]") \
         .appName("Structured Streaming") \
-        .config("spark.sql.shuffle.partitions", 5) \
-        .config("spark.eventLog.enabled", True) \
-        .config("spark.eventLog.dir", "file:///tmp/spark-events") \
-        .config("spark.history.fs.logDirectory", "file:///tmp/spark-events") \
-        .getOrCreate()
+        .config("spark.sql.shuffle.partitions", 5)
 
-    static = spark.read.json("./data/activity-data/")
+    # needs history-server running
+    # spark = spark.config("spark.eventLog.enabled", True) \
+    #     .config("spark.eventLog.dir", "file:///tmp/spark-events") \
+    #     .config("spark.history.fs.logDirectory", "file:///tmp/spark-events")
+
+    spark = spark.getOrCreate()
+
+    path = "../data/activity-data/"
+    static = spark.read.json(path)
     dataSchema = static.schema
     print(dataSchema)
-    streaming = spark.readStream.schema(dataSchema).option("maxFilesPerTrigger", 1).json("./data/activity-data")
+    streaming = spark.readStream.schema(dataSchema).option("maxFilesPerTrigger", 1).json(path)
 
     # query = activity_counts(streaming)
     query = trans_example(streaming)
-    # join_example(streaming)
+    # query = join_example(streaming)
     query.awaitTermination()
