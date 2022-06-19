@@ -33,6 +33,7 @@ def trans_example(input_streaming: DataFrame) -> StreamingQuery:
         .queryName("simple_transform") \
         .format("memory") \
         .outputMode("append") \
+        .option("checkpointLocation", "../checkpoint/") \
         .start()
     Thread(target=query_result, args=['simple_transform']).start()
     return query

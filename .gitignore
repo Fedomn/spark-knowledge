@@ -6,3 +6,4 @@ src/main/resources/data
 pyspark/data
 spark-3.2.0-bin-hadoop3.2
 spark-3.2.0-bin-hadoop3.2.tgz
+checkpoint
