@@ -16,3 +16,7 @@ link-data:
 spark-bin:
 	wget https://dlcdn.apache.org/spark/spark-3.2.0/spark-3.2.0-bin-hadoop3.2.tgz
 	tar -zxvf ./spark-3.2.0-bin-hadoop3.2.tgz
+
+kafka-bin:
+	wget https://dlcdn.apache.org/kafka/3.2.0/kafka-3.2.0-src.tgz
+	tar -zxvf ./kafka-3.2.0-src.tgz
