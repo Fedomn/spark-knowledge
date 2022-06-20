@@ -25,3 +25,14 @@
   - `每个微批 不是输出 updated 的聚合结果，而是 watermark 确保 aggregation window 不在更新时，才输出 window 中的 聚合结果`
   - 优势，可用于 append-only sinks (file)
   - 劣势，latency，输出结果 必须等待一个 watermark 结束后，才能得到结果
+
+## arbitrary stateful processing
+
+Stateful processing is available only in Scala in Spark 2.2 to meet custom aggregation
+
+- mapGroupsWithState: Map over groups in your data, operate on each group of data, and generate at most a single row for each group
+- flatMapGroupsWithState: Map over groups in your data, operate on each group of data, and generate one or more rows for each group.
+- currently, above two function only supported in Scala/Java.
+
+
+## join
