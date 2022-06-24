@@ -9,3 +9,6 @@ spark-3.2.0-bin-hadoop3.2.tgz
 checkpoint
 kafka-3.2.0-src
 kafka-3.2.0-src.tgz
+warehouse
+derby.log
+metastore_db
