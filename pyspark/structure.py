@@ -7,6 +7,6 @@ if __name__ == '__main__':
         .appName("StructuredAPI") \
         .getOrCreate()
 
-    df = spark.read.format("json").load("../resources/data/flight-data/json/2015-summary.json")
+    df = spark.read.format("json").load("./data/flight-data/json/2015-summary.json")
     df.printSchema()
     df.select("*").where("count > 1").orderBy(desc("count")).show(3)
