@@ -35,4 +35,12 @@ Stateful processing is available only in Scala in Spark 2.2 to meet custom aggre
 - currently, above two function only supported in Scala/Java.
 
 
-## join
+## streaming joins
+
+- stream-static joins: a data stream join with a static dataset
+  - stateless operations, and therefore do not require any kind of watermarking.
+  - static DataFrame is read repeatedly while joining with the streaming data of every micro-batch, so you can cache the static DataFrame to speed up the read.
+- stream-stream joins: 
+  - The challenge of generating joins between two data streams is that, at any point in time, the view of either Dataset is incomplete, making it much harder to find matches between inputs.
+  - For inner joins, specifying watermarking and event-time constraints are both optional.In other words, at the risk of potentially unbounded state, you may choose not to specify them. Only when both are specified will you get state cleanup.
+  - Unlike with inner joins, the watermark delay and event-time constraints are not optional for outer joins. This is because for generating the NULL results, the engine must know when an event is not going to match with anything else in the future. For correct outer join results and state cleanup, the watermarking and event-time constraints must be specified.
