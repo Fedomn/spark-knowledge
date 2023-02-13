@@ -2,7 +2,7 @@ from threading import Thread
 from time import sleep
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import window, col
+from pyspark.sql.functions import window, col, expr
 from pyspark.sql.streaming import StreamingQuery
 
 
@@ -105,6 +105,36 @@ def drop_duplicates_example(input_streaming: DataFrame) -> StreamingQuery:
     return watermark
 
 
+def join_stream_stream(input_streaming: DataFrame) -> StreamingQuery:
+    """
+    To allow the state cleanup in this stream-stream join: watermark + event-time constraints needed for outer joins
+    1. 限制 state: watermark delays on both inputs such that the engine knows how delayed the input can be (similar to streaming aggregations)
+    2. 类似 aggregation window作用，输出有限结果: a constraint on event-time across the two inputs such that the engine can figure out when old rows of one input is not going to be required for matches with the other input.
+    """
+    a = input_streaming \
+        .selectExpr("*", "cast(cast(Creation_Time as double)/1000000000 as timestamp) as event_time") \
+        .withWatermark("event_time", "10 minutes") \
+        .alias("a")
+    b = input_streaming \
+        .selectExpr("*", "cast(cast(Creation_Time as double)/1000000000 as timestamp) as event_time") \
+        .withWatermark("event_time", "10 minutes") \
+        .alias("b")
+    query = a.join(b, expr("""
+    a.index = b.index
+    and a.event_time >= b.event_time
+    and a.event_time <= b.event_time + interval 5 minutes
+    """), "left") \
+        .select('a.index', 'a.event_time', 'a.user', 'b.index', 'b.event_time', 'b.user')
+
+    query = query \
+        .writeStream \
+        .format("console") \
+        .outputMode("append") \
+        .start(truncate=False)
+
+    return query
+
+
 if __name__ == '__main__':
     spark = SparkSession.builder \
         .master("local[*]") \
@@ -112,9 +142,9 @@ if __name__ == '__main__':
         .config("spark.sql.shuffle.partitions", 5)
 
     # needs history-server running
-    spark = spark.config("spark.eventLog.enabled", True) \
-        .config("spark.eventLog.dir", "file:///tmp/spark-events") \
-        .config("spark.history.fs.logDirectory", "file:///tmp/spark-events")
+    # spark = spark.config("spark.eventLog.enabled", True) \
+    #     .config("spark.eventLog.dir", "file:///tmp/spark-events") \
+    #     .config("spark.history.fs.logDirectory", "file:///tmp/spark-events")
 
     spark = spark.getOrCreate()
 
@@ -127,6 +157,7 @@ if __name__ == '__main__':
 
     # query = tumbling_window_example(streaming)
     # query = sliding_window_example(streaming)
-    query = watermark_example(streaming)
+    # query = watermark_example(streaming)
     # query = drop_duplicates_example(streaming)
+    query = join_stream_stream(streaming)
     query.awaitTermination()

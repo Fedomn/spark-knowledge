@@ -2,13 +2,14 @@
 
 不论 Spark Streaming 还是 Structured Streaming 都是 Spark 的一种 execution model：
 
-- [Spark Streaming Programming Guide](https://spark.apache.org/docs/latest/streaming-programming-guide.html)
+- [(Legacy) Spark Streaming Programming Guide](https://spark.apache.org/docs/latest/streaming-programming-guide.html)
 - [Structured Streaming Programming Guide](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html)
   - Together, using replayable sources and idempotent sinks, Structured Streaming can ensure end-to-end exactly-once semantics under any failure.
 
 
-- Spark Streaming：spark 会以 微批的形式，at fixed time interval 收集数据 并执行计算，返回这个 固定时间内的 结果
-- Structured Streaming：构建在 SQL query optimizer Catalyst 之上的 API，提供对 无限表的 连续查询
+- (Legacy) Spark Streaming：spark 会以 微批的形式，at fixed time interval 收集数据 并执行计算，返回这个 固定时间内的 结果
+- Structured Streaming：构建在 SQL query optimizer Catalyst 之上的 API，提供对 无限表的 连续查询。默认情况下，是 micro-batch 处理引擎。
+  - The key idea in Structured Streaming is to treat a live data stream as a table that is being **continuously** appended.
 
 ## output modes 配合 watermark
 
@@ -41,6 +42,8 @@ Stateful processing is available only in Scala in Spark 2.2 to meet custom aggre
   - stateless operations, and therefore do not require any kind of watermarking.
   - static DataFrame is read repeatedly while joining with the streaming data of every micro-batch, so you can cache the static DataFrame to speed up the read.
 - stream-stream joins: 
-  - The challenge of generating joins between two data streams is that, at any point in time, the view of either Dataset is incomplete, making it much harder to find matches between inputs.
+  - The challenge of generating joins between two data streams is that, at any point in time, the view of either Dataset is incomplete, making it much harder to find matches between inputs. Hence, for both the input streams, we buffer past input as streaming state, so that we can match every future input with past input and accordingly generate joined results.
   - For inner joins, specifying watermarking and event-time constraints are both optional.In other words, at the risk of potentially unbounded state, you may choose not to specify them. Only when both are specified will you get state cleanup.
   - Unlike with inner joins, the watermark delay and event-time constraints are not optional for outer joins. This is because for generating the NULL results, the engine must know when an event is not going to match with anything else in the future. For correct outer join results and state cleanup, the watermarking and event-time constraints must be specified.
+
+- [Introducing Stream-Stream Joins in Apache Spark 2.3](https://www.databricks.com/blog/2018/03/13/introducing-stream-stream-joins-in-apache-spark-2-3.html)

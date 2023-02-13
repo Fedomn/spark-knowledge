@@ -40,6 +40,10 @@ def trans_example(input_streaming: DataFrame) -> StreamingQuery:
 
 
 def join_example(input_streaming: DataFrame) -> StreamingQuery:
+    """
+    Stream-static Joins
+    Support matrix for joins in streaming queries: https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#support-matrix-for-joins-in-streaming-queries
+    """
     historical_agg = static.groupBy("gt", "model").avg()
     device_model_stats = input_streaming \
         .drop("Arrival_Time", "Creation_Time") \
