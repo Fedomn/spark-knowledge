@@ -20,3 +20,8 @@ spark-bin:
 kafka-bin:
 	wget https://dlcdn.apache.org/kafka/3.2.0/kafka-3.2.0-src.tgz
 	tar -zxvf ./kafka-3.2.0-src.tgz
+
+deps:
+	open https://repo1.maven.org/maven2/org/apache/hudi/hudi-spark3.2-bundle_2.12/
+	- $(eval LIB_PATH=$(shell pip3 show pyspark | grep 'Location' | grep -oE ": (.*)" | cut -c3-))
+	cd ${LIB_PATH}/pyspark/jars
