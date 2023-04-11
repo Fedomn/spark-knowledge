@@ -17,5 +17,5 @@ use [Spark-The-Definitive-Guide's data](https://github.com/databricks/Spark-The-
 
 ### sdk requirements (global)
 
-- java: 11.0.11.hs-adpt
-- Python 3.8.10
+- java: 11.0.2-open
+- Python 3.8.10 and add python interpreter in modules
