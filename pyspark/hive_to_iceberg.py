@@ -32,8 +32,8 @@ def write_hive_orc_table():
     spark.sql(sql)
 
 
-def write_iceberg_table(table_name):
-    sql = f"""insert overwrite {table_name} select * from flight"""
+def write_incremental_table(table_name):
+    sql = f"""insert into {table_name} values ('test_original_country', 11, 'test_dest_country');"""
     spark.sql(sql)
 
 
@@ -46,16 +46,20 @@ if __name__ == '__main__':
     spark.sql("show tables").show()
 
     # 1. prepare hive table
-    write_hive_orc_table()
+    # write_hive_orc_table()
 
     # 2. An in-place migration means we will leave the existing data files as-is and create only the metadata for the
     # new Iceberg table using the data files of the existing Hive table.
 
     # snapshot:
-    spark.sql("CALL iceberg.system.snapshot(table => 'iceberg.db.flight_snapshot', source_table => 'default.flight')")
+    # spark.sql("CALL iceberg.system.snapshot(table => 'iceberg.db.flight_snapshot', source_table => 'default.flight')")
     # new files are placed in the snapshot table’s location rather than the original table location.
-    # write_iceberg_table('iceberg.db.flight_snapshot')
     # drop table only remove iceberg table files
+
+    # iceberg snapshot table only see data before snapshot
+    # write_incremental_table('flight')
+    # write_incremental_table('iceberg.db.flight_snapshot')
+    # select * from iceberg.db.flight_snapshot where dest_country_name='test_dest_country';
 
     # migrate:
     # spark.sql("CALL iceberg.system.migrate(table => 'flight')").show()
@@ -70,3 +74,4 @@ if __name__ == '__main__':
     # select * from iceberg.db.flight_snapshot limit 10;
     # select file_path from iceberg.db.flight_snapshot.files limit 10;
     # select snapshot_id, manifest_list from iceberg.db.flight_snapshot.snapshots;
+    # select count(1) from iceberg.db.flight_snapshot where dest_country_name='Spain';
