@@ -61,8 +61,11 @@ if __name__ == '__main__':
     # write_incremental_table('iceberg.db.flight_snapshot')
     # select * from iceberg.db.flight_snapshot where dest_country_name='test_dest_country';
 
-    # migrate:
+    # migrate: (can't use derby as HMS), migrate original catalog table to iceberg format
     # spark.sql("CALL iceberg.system.migrate(table => 'flight')").show()
+    # spark.sql("show create table flight;").show(truncate=False)
+    # write_incremental_table('flight')
+    # select * from iceberg.db.flight where dest_country_name='test_dest_country';
 
     # add_files:
     # spark.sql("CALL iceberg.system.add_files(table => 'iceberg.db.flight', source_table => 'flight')")
