@@ -22,6 +22,10 @@ kafka-bin:
 	tar -zxvf ./kafka-3.2.0-src.tgz
 
 deps:
-	open https://repo1.maven.org/maven2/org/apache/hudi/hudi-spark3.2-bundle_2.12/
+	# spark 3.3.2
+	# hudi-spark3.3-bundle_2.12-0.13.0.jar
+	open https://repo1.maven.org/maven2/org/apache/hudi
+	# iceberg-spark-runtime-3.3_2.12-1.2.1.jar
+	open https://repo1.maven.org/maven2/org/apache/iceberg
 	- $(eval LIB_PATH=$(shell pip3 show pyspark | grep 'Location' | grep -oE ": (.*)" | cut -c3-))
 	cd ${LIB_PATH}/pyspark/jars

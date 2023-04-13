@@ -19,3 +19,4 @@ use [Spark-The-Definitive-Guide's data](https://github.com/databricks/Spark-The-
 
 - java: 11.0.2-open
 - Python 3.8.10 and add python interpreter in modules
+- pyspark==3.3.2
