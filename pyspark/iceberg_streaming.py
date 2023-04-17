@@ -6,9 +6,14 @@ def create_table(path: str):
     static.createTempView("activityTempView")
     print(static.schema)
     sql = f"""
-    create table iceberg.db.activity
+    create table if not exists iceberg.db.activity
     using iceberg
     partitioned by (device)
+    TBLPROPERTIES (
+        "write.metadata.delete-after-commit.enabled"="true",
+        "write.metadata.previous-versions-max"="10",
+        "commit.manifest.min-count-to-merge"="10"
+    )
     as select * from activityTempView limit 0
     """
     spark.sql(sql)
@@ -24,8 +29,14 @@ if __name__ == '__main__':
         .config('spark.sql.catalog.iceberg', 'org.apache.iceberg.spark.SparkCatalog') \
         .config('spark.sql.catalog.iceberg.type', 'hadoop') \
         .config('spark.sql.catalog.iceberg.warehouse', './iceberg-warehouse') \
-        .config('spark.sql.extensions', 'org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions') \
-        .getOrCreate()
+        .config('spark.sql.extensions', 'org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions')
+
+    # needs history-server running
+    # spark = spark.config("spark.eventLog.enabled", True) \
+    #     .config("spark.eventLog.dir", "file:///tmp/spark-events") \
+    #     .config("spark.history.fs.logDirectory", "file:///tmp/spark-events")
+
+    spark = spark.getOrCreate()
 
     path = "./data/activity-data/"
     create_table(path)
@@ -33,12 +44,12 @@ if __name__ == '__main__':
 
     schema = spark.read.json(path).schema
     streaming = spark.readStream.schema(schema).option("maxFilesPerTrigger", 1).json(path)
-    # TODO: optimize too many small files
+
     query = streaming.writeStream \
         .format("iceberg") \
         .outputMode("append") \
-        .option("maxFilesPerTrigger", 1) \
-        .option("path", "iceberg.db.activity") \
         .option("checkpointLocation", "./checkpoint/") \
+        .option("path", "iceberg.db.activity") \
         .start()
+    # .option("fanout-enabled", "true") \
     query.awaitTermination()
