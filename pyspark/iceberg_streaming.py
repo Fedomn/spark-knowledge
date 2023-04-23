@@ -12,6 +12,7 @@ def create_table(path: str):
     TBLPROPERTIES (
         "write.metadata.delete-after-commit.enabled"="true",
         "write.metadata.previous-versions-max"="10",
+        "write.target-file-size-bytes"="1048576000",
         "commit.manifest.min-count-to-merge"="10"
     )
     as select * from activityTempView limit 0
@@ -20,15 +21,17 @@ def create_table(path: str):
 
 
 if __name__ == '__main__':
+    basePath = "."
+    # basePath = "hdfs://xxx:9000"
     spark = SparkSession.builder \
         .master("local[*]") \
         .appName("iceberg_streaming") \
         .config('spark.sql.catalog.spark_catalog', 'org.apache.iceberg.spark.SparkSessionCatalog') \
         .config('spark.sql.catalog.spark_catalog.type', 'hadoop') \
-        .config("spark.sql.catalog.spark_catalog.warehouse", './hive-warehouse') \
+        .config("spark.sql.catalog.spark_catalog.warehouse", f'{basePath}/hive-warehouse') \
         .config('spark.sql.catalog.iceberg', 'org.apache.iceberg.spark.SparkCatalog') \
         .config('spark.sql.catalog.iceberg.type', 'hadoop') \
-        .config('spark.sql.catalog.iceberg.warehouse', './iceberg-warehouse') \
+        .config('spark.sql.catalog.iceberg.warehouse', f'{basePath}/iceberg-warehouse') \
         .config('spark.sql.extensions', 'org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions')
 
     # needs history-server running
