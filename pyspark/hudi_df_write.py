@@ -1,3 +1,5 @@
+import os
+
 from pyspark.sql import SparkSession
 
 if __name__ == '__main__':
@@ -7,10 +9,13 @@ if __name__ == '__main__':
         .config('spark.serializer', 'org.apache.spark.serializer.KryoSerializer') \
         .config('spark.sql.catalog.spark_catalog', 'org.apache.spark.sql.hudi.catalog.HoodieCatalog') \
         .config('spark.sql.extensions', 'org.apache.spark.sql.hudi.HoodieSparkSessionExtension') \
+        .config("spark.sql.warehouse.dir", './hudi-warehouse') \
+        .enableHiveSupport() \
         .getOrCreate()
 
+    abspath = os.path.abspath('')
     tableName = "hudi_trips_cow"
-    basePath = "file:///tmp/hudi_trips_cow"
+    basePath = f"{abspath}/hudi-warehouse/hudi_trips_cow"
     # https://github.com/apache/hudi/blob/master/hudi-spark-datasource/hudi-spark/src/main/java/org/apache/hudi/QuickstartUtils.java
     dataGen = spark._jvm.org.apache.hudi.QuickstartUtils.DataGenerator()
 
@@ -27,7 +32,9 @@ if __name__ == '__main__':
         'hoodie.datasource.write.operation': 'upsert',
         'hoodie.datasource.write.precombine.field': 'ts',
         'hoodie.upsert.shuffle.parallelism': 2,
-        'hoodie.insert.shuffle.parallelism': 2
+        'hoodie.insert.shuffle.parallelism': 2,
+        'hoodie.index.type': 'GLOBAL_SIMPLE',
+        'hoodie.simple.index.update.partition.path': True,
     }
 
     # write_options: https://hudi.apache.org/docs/writing_data/

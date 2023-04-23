@@ -1,8 +1,5 @@
-install:
-	sdk install hadoop
-	export HADOOP_HOME=$(sdk home hadoop 3.3.0)
-
 hadoop-bin:
+	#https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html#Pseudo-Distributed_Operation
 	wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.4/hadoop-3.3.4.tar.gz
 	tar -zxvf ./hadoop-3.3.4.tar.gz
 
