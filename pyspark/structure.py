@@ -2,10 +2,12 @@ if __name__ == '__main__':
     from pyspark.sql import SparkSession
     from pyspark.sql.functions import *
 
+    # test for hive metastore and files saved on hdfs, spark not use spark.sql.warehouse.dir
+    # .config("hive.metastore.uris", 'thrift://127.0.0.1:9083') \
     spark = SparkSession.builder \
         .master("local[*]") \
         .appName("StructuredAPI") \
-        .config("spark.sql.warehouse.dir", './warehouse') \
+        .config("spark.sql.warehouse.dir", './hive-warehouse') \
         .enableHiveSupport() \
         .getOrCreate()
 
