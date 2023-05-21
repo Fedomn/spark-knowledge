@@ -15,10 +15,10 @@
   </property>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>file:///tmp/hdfs/name</value>
+    <value>file:///Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/name</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>file:///tmp/hdfs/data</value>
+    <value>file:///Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/data</value>
   </property>
 </configuration>

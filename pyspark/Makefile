@@ -17,3 +17,9 @@ show-parquet:
 
 submit-yarn:
 	spark-submit --master yarn --deploy-mode cluster --name "xxx" --driver-memory 10g --executor-memory 10g --executor-cores 3 xxx.py
+
+enable-hive-catalog:
+	cp ./hive-site.xml ~/.pyenv/versions/3.8.10/lib/python3.8/site-packages/pyspark/conf/
+
+remove-hive-catalog:
+	rm ~/.pyenv/versions/3.8.10/lib/python3.8/site-packages/pyspark/conf/hive-site.xml

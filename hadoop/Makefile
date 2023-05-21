@@ -7,15 +7,15 @@ hadoop-bin:
 
 HADOOP_HOME=${DIR}/hadoop-3.3.4
 hdfs-init: hdfs-clean
-	mkdir -p /tmp/hdfs/data
-	mkdir -p /tmp/hdfs/name
+	mkdir -p Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/data
+	mkdir -p Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/name
 	cp ./core-site.xml ./hadoop-3.3.4/etc/hadoop/core-site.xml
 	cp ./hdfs-site.xml ./hadoop-3.3.4/etc/hadoop/hdfs-site.xml
 	${HADOOP_HOME}/bin/hdfs namenode -format
 
 hdfs-clean:
-	rm -rf /tmp/hdfs/data
-	rm -rf /tmp/hdfs/name
+	rm -rf Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/data
+	rm -rf Users/frankma/dev/db/fedomn/spark-knowledge/hadoop/hdfs/name
 
 hdfs-start: hdfs-stop
 	${HADOOP_HOME}/bin/hdfs --daemon start namenode
@@ -24,6 +24,11 @@ hdfs-start: hdfs-stop
 hdfs-stop:
 	${HADOOP_HOME}/bin/hdfs --daemon stop namenode
 	${HADOOP_HOME}/bin/hdfs --daemon stop datanode
+
+hdfs-shell:
+	${HADOOP_HOME}/bin/hdfs dfs -ls -R /iceberg-warehouse | \
+	awk '{print $8}' | \
+	sed -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/'
 
 hdfs-open:
 	open http://localhost:9870
