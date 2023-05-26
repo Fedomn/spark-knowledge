@@ -63,6 +63,8 @@ hiveserver2:
 	${HIVE_HOME}/bin/hiveserver2
 
 beeline:
+	export HADOOP_HOME=${HADOOP_HOME} && \
+	export HADOOP_CLASSPATH=$$(${HADOOP_HOME}/bin/hadoop classpath) && \
 	${HIVE_HOME}/bin/beeline -u jdbc:hive2://127.0.0.1:10000 scott tiger
 
 hiveserver2-web:
